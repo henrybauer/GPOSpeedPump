@@ -34,7 +34,7 @@ namespace GPOSpeedFuelPump
         
 		private Dictionary<string, int> _resourceFlags;
 
-		[KSPField (isPersistant = true, guiActive = true, guiActiveEditor = true, guiName = "Pump Level"), UI_FloatRange (minValue = 0f, maxValue = 8f, stepIncrement = 1f)]
+		[KSPField (isPersistant = true, guiActive = true, guiActiveEditor = true, guiName = "Pump Level"), UI_FloatRange (minValue = 0f, maxValue = 16f, stepIncrement = 1f)]
 		public float _pumpLevel;
         
 		[KSPField (isPersistant = true, guiActive = true, guiActiveEditor = true, guiName = "Pump is "), UI_Toggle (disabledText = "Off", enabledText = "On")]
