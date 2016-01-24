@@ -1,0 +1,9 @@
+*.dll
+*.mdb
+*.pidb
+*.userprefs
+*.sln
+*.csproj
+GPOSpeedPump/obj/*
+GPOSpeedPump/Properties/*
+.DS_Store
