@@ -12,6 +12,7 @@ GNU General Public License for more details.
  * 
  * 
  * 30/04/2015 - Taken over by GPO for KSP 1.0
+ * 24/01/2016 - updated for 1.0.5.  Respect resource lock, and don't operate on NO_FLOW resources.
 
 http://www.gnu.org/licenses/gpl.html
 */
@@ -20,8 +21,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-
-// ReSharper disable UnusedMember.Global
 
 namespace GPOSpeedFuelPump
 {
@@ -57,9 +56,9 @@ namespace GPOSpeedFuelPump
 					if (Int32.TryParse (cfgValue, out flags))
 						_resourceFlags.Add (resourceName, flags);
 					else
-						_resourceFlags.Add (resourceName, -1);
+						SetResourceFlags (resourceName, -1);
 				} else
-					_resourceFlags.Add (resourceName, -1);
+					SetResourceFlags (resourceName, -1);
 			}
 		
 			return _resourceFlags [resourceName] & mask;
@@ -69,8 +68,12 @@ namespace GPOSpeedFuelPump
 		{
 			if (_resourceFlags == null)
 				_resourceFlags = new Dictionary<string, int> ();
-		
-			_resourceFlags [resourceName] = value;
+
+			if (isFlowableResource (resourceName)) {
+				_resourceFlags [resourceName] = value;
+			} else { // don't operate on NO_FLOW resources like SolidFuel
+				_resourceFlags [resourceName] = 0;
+			}
 		}
 
 		public override void OnLoad (ConfigNode cn)
@@ -105,7 +108,21 @@ namespace GPOSpeedFuelPump
 			}
 		}
 
-	
+		private bool isFlowableResource (string resourceName)
+		{
+			PartResourceDefinition resource = PartResourceLibrary.Instance.GetDefinition (resourceName);
+			if (resource == null) {
+				return false;
+			}
+			if (resource.resourceFlowMode == ResourceFlowMode.NO_FLOW) {
+				return false;
+			}
+			if (resource.resourceFlowMode == ResourceFlowMode.NULL) {
+				return false;
+			}
+			return true;
+		}
+
 		private void DrawConfigWindow (int id)
 		{
 			GUIStyle style = new GUIStyle (GUI.skin.button) { padding = new RectOffset (8, 8, 4, 4) };
@@ -115,7 +132,7 @@ namespace GPOSpeedFuelPump
 			foreach (PartResource pr in part.Resources) {
 				SetResourceFlags (pr.resourceName, GetResourceFlags (pr.resourceName, ~1) | (GUILayout.Toggle (GetResourceFlags (pr.resourceName, 1) == 1, "Pump " + pr.resourceName) ? 1 : 0));
 				SetResourceFlags (pr.resourceName, GetResourceFlags (pr.resourceName, ~2) | (GUILayout.Toggle (GetResourceFlags (pr.resourceName, 2) == 2, "Balance " + pr.resourceName) ? 2 : 0));
-			} 
+			}
 			if (GUILayout.Button ("Close", style, GUILayout.ExpandWidth (true))) {
 				RenderingManager.RemoveFromPostDrawQueue (3, ShowConfigWindow);
 				_winShow = false;
@@ -150,21 +167,25 @@ namespace GPOSpeedFuelPump
 		private void PumpOut (float secs)
 		{
 			foreach (PartResource pumpRes in part.Resources) {
-				if (GetResourceFlags (pumpRes.resourceName, 1) == 1) {
-					foreach (Part shipPart in vessel.Parts) {
-						float shipPartLevel = 0f;
-						if (shipPart.Modules.Contains ("GPOSpeedPump")) {
-							var gpoSpeedPump = shipPart.Modules ["GPOSpeedPump"] as GPOSpeedPump;
-							if (gpoSpeedPump != null)
-								shipPartLevel = gpoSpeedPump._pumpLevel;
-						}
-						if (shipPartLevel < _pumpLevel) {
-							foreach (PartResource shipPartRes in shipPart.Resources) {
-								if (shipPartRes.resourceName == pumpRes.resourceName) {
-									double give = Math.Min (Math.Min (shipPartRes.maxAmount - shipPartRes.amount, pumpRes.amount), Math.Min (pumpRes.maxAmount, shipPartRes.maxAmount) / 10.0 * secs);
-									if (give > 0.0) { // Sanity check.  Apparently some other mods happily set amount or maxAmount to... interesting values...
-										pumpRes.amount -= give;
-										shipPartRes.amount += give;
+				if (pumpRes.flowState) { // don't operate if resource is locked
+					if (GetResourceFlags (pumpRes.resourceName, 1) == 1) {
+						foreach (Part shipPart in vessel.Parts) {
+							float shipPartLevel = 0f;
+							if (shipPart.Modules.Contains ("GPOSpeedPump")) {
+								var gpoSpeedPump = shipPart.Modules ["GPOSpeedPump"] as GPOSpeedPump;
+								if (gpoSpeedPump != null)
+									shipPartLevel = gpoSpeedPump._pumpLevel;
+							}
+							if (shipPartLevel < _pumpLevel) {
+								foreach (PartResource shipPartRes in shipPart.Resources) {
+									if (shipPartRes.resourceName == pumpRes.resourceName) {
+										if (shipPartRes.flowState) { // don't operate if resource is locked
+											double give = Math.Min (Math.Min (shipPartRes.maxAmount - shipPartRes.amount, pumpRes.amount), Math.Min (pumpRes.maxAmount, shipPartRes.maxAmount) / 10.0 * secs);
+											if (give > 0.0) { // Sanity check.  Apparently some other mods happily set amount or maxAmount to... interesting values...
+												pumpRes.amount -= give;
+												shipPartRes.amount += give;
+											}
+										}
 									}
 								}
 							}
@@ -177,28 +198,34 @@ namespace GPOSpeedFuelPump
 		private void Balance ()
 		{
 			foreach (PartResource pumpRes in part.Resources) {
-				if (GetResourceFlags (pumpRes.resourceName, 2) == 2) {
-					double resAmt = 0f;
-					double resMax = 0f;
-					foreach (Part shipPart in vessel.Parts) {
-						if (shipPart.Modules.Contains ("GPOSpeedPump")
-						                      && ((GPOSpeedPump)shipPart.Modules ["GPOSpeedPump"])._autoBalance
-						                      && Math.Abs (((GPOSpeedPump)shipPart.Modules ["GPOSpeedPump"])._pumpLevel - _pumpLevel) < Tolerance) {
-							foreach (PartResource shipPartRes in shipPart.Resources) {
-								if (shipPartRes.resourceName == pumpRes.resourceName) {
-									resAmt += shipPartRes.amount;
-									resMax += shipPartRes.maxAmount;
+				if (pumpRes.flowState) { // don't operate if resource is locked
+					if (GetResourceFlags (pumpRes.resourceName, 2) == 2) {
+						double resAmt = 0f;
+						double resMax = 0f;
+						foreach (Part shipPart in vessel.Parts) {
+							if (shipPart.Modules.Contains ("GPOSpeedPump")
+							    && ((GPOSpeedPump)shipPart.Modules ["GPOSpeedPump"])._autoBalance
+							    && Math.Abs (((GPOSpeedPump)shipPart.Modules ["GPOSpeedPump"])._pumpLevel - _pumpLevel) < Tolerance) {
+								foreach (PartResource shipPartRes in shipPart.Resources) {
+									if (shipPartRes.resourceName == pumpRes.resourceName) {
+										if (shipPartRes.flowState) { // don't operate if resource is locked
+											resAmt += shipPartRes.amount;
+											resMax += shipPartRes.maxAmount;
+										}
+									}
 								}
 							}
 						}
-					}
-					foreach (Part shipPart in vessel.Parts) {
-						if (shipPart.Modules.Contains ("GPOSpeedPump")
-						                      && ((GPOSpeedPump)shipPart.Modules ["GPOSpeedPump"])._autoBalance
-						                      && Math.Abs (((GPOSpeedPump)shipPart.Modules ["GPOSpeedPump"])._pumpLevel - _pumpLevel) < Tolerance) {
-							foreach (PartResource shipPartRes in shipPart.Resources) {
-								if (shipPartRes.resourceName == pumpRes.resourceName) {
-									shipPartRes.amount = shipPartRes.maxAmount * resAmt / resMax;
+						foreach (Part shipPart in vessel.Parts) {
+							if (shipPart.Modules.Contains ("GPOSpeedPump")
+							    && ((GPOSpeedPump)shipPart.Modules ["GPOSpeedPump"])._autoBalance
+							    && Math.Abs (((GPOSpeedPump)shipPart.Modules ["GPOSpeedPump"])._pumpLevel - _pumpLevel) < Tolerance) {
+								foreach (PartResource shipPartRes in shipPart.Resources) {
+									if (shipPartRes.resourceName == pumpRes.resourceName) {
+										if (shipPartRes.flowState) { // don't operate if resource is locked
+											shipPartRes.amount = shipPartRes.maxAmount * resAmt / resMax;
+										}
+									}
 								}
 							}
 						}
