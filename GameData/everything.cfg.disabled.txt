@@ -1,0 +1,12 @@
+// This config file REQUIRES ModuleManager to function!  Get it here: http://forum.kerbalspaceprogram.com/threads/55219
+//
+// This file adds the GPOSpeed Fuel Pump to anything that has ANY resource
+// Rename it to "everything.cfg" for it to work, and remove/rename the other config files
+
+@PART [*]:@RESOURCE [*],!MODULE[GPOSpeedPump]]:NEEDS[GPOSpeedFuelPump]:FINAL
+{
+	MODULE
+	{
+		name = GPOSpeedPump
+	}
+}
