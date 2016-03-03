@@ -45,6 +45,7 @@ namespace GPOSpeedFuelPump
 
 		private int GetResourceFlags (string resourceName, int mask)
 		{
+			try {
 			if (_resourceFlags == null)
 				_resourceFlags = new Dictionary<string, int> ();
 		
@@ -62,6 +63,9 @@ namespace GPOSpeedFuelPump
 			}
 		
 			return _resourceFlags [resourceName] & mask;
+			} catch (Exception e) {
+				return 0;
+			}
 		}
 
 		private void SetResourceFlags (string resourceName, int value)
