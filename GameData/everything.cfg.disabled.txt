@@ -3,7 +3,7 @@
 // This file adds the GPOSpeed Fuel Pump to anything that has ANY resource
 // Rename it to "everything.cfg" for it to work, and remove/rename the other config files
 
-@PART [*]:@RESOURCE [*],!MODULE[GPOSpeedPump]]:NEEDS[GPOSpeedFuelPump]:FINAL
+@PART[*]:HAS[@RESOURCE[*],!MODULE[GPOSpeedPump]]:NEEDS[GPOSpeedFuelPump]:FINAL
 {
 	MODULE
 	{
