@@ -138,7 +138,6 @@ namespace GPOSpeedFuelPump
 				SetResourceFlags (pr.resourceName, GetResourceFlags (pr.resourceName, ~2) | (GUILayout.Toggle (GetResourceFlags (pr.resourceName, 2) == 2, "Balance " + pr.resourceName) ? 2 : 0));
 			}
 			if (GUILayout.Button ("Close", style, GUILayout.ExpandWidth (true))) {
-				RenderingManager.RemoveFromPostDrawQueue (3, ShowConfigWindow);
 				_winShow = false;
 			}
 			GUILayout.EndVertical ();
@@ -146,10 +145,12 @@ namespace GPOSpeedFuelPump
 			GUI.DragWindow ();
 		}
 
-		private void ShowConfigWindow ()
+		private void OnGUI ()
 		{
-			GUI.skin = null;
-			_winPos = GUILayout.Window (_winId, _winPos, DrawConfigWindow, "GPOSpeed Pump");
+			if (_winShow) {
+				GUI.skin = null;
+				_winPos = GUILayout.Window (_winId, _winPos, DrawConfigWindow, "GPOSpeed Pump");
+			}
 		}
 
 		[KSPEvent (guiActive = true, guiActiveEditor = true, guiName = "Pump Options")]
@@ -160,10 +161,8 @@ namespace GPOSpeedFuelPump
 				_winPos.yMin = Math.Min (Math.Max (0, Event.current.mousePosition.y), Screen.height - _winPos.height);
 				_winPos.width = 208;
 				_winPos.height = 16;
-				RenderingManager.AddToPostDrawQueue (3, ShowConfigWindow); 
 				_winShow = true;
 			} else {
-				RenderingManager.RemoveFromPostDrawQueue (3, ShowConfigWindow);
 				_winShow = false;
 			}
 		}
@@ -251,7 +250,6 @@ namespace GPOSpeedFuelPump
 			_lastUpdate = now;
 		
 			if (_winShow && !vessel.isActiveVessel) {
-				RenderingManager.RemoveFromPostDrawQueue (3, ShowConfigWindow);
 				_winShow = false;
 			}
 		}
