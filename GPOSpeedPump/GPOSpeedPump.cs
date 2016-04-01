@@ -145,11 +145,18 @@ namespace GPOSpeedFuelPump
 			GUI.DragWindow ();
 		}
 
+		internal static Rect clampToScreen (Rect rect)
+		{
+			rect.x = Mathf.Clamp (rect.x, 0, Screen.width - rect.width);
+			rect.y = Mathf.Clamp (rect.y, 0, Screen.height - rect.height);
+			return rect;
+		}
+
 		private void OnGUI ()
 		{
 			if (_winShow) {
 				GUI.skin = null;
-				_winPos = GUILayout.Window (_winId, _winPos, DrawConfigWindow, "GPOSpeed Pump");
+				_winPos = clampToScreen (GUILayout.Window (_winId, _winPos, DrawConfigWindow, "GPOSpeed Pump"));
 			}
 		}
 
@@ -157,7 +164,7 @@ namespace GPOSpeedFuelPump
 		public void ConfigurePump ()
 		{
 			if (!_winShow) {
-				_winPos.xMin = Math.Min (Math.Max (0, vessel == null ? Screen.width - _winPos.width : Event.current.mousePosition.x + 10), Screen.width - _winPos.width);
+				_winPos.xMin = Math.Min (Math.Max (0, vessel == null ? Screen.width - _winPos.width : Event.current.mousePosition.x + 180), Screen.width - _winPos.width);
 				_winPos.yMin = Math.Min (Math.Max (0, Event.current.mousePosition.y), Screen.height - _winPos.height);
 				_winPos.width = 208;
 				_winPos.height = 16;
