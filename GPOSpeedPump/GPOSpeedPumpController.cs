@@ -18,7 +18,7 @@ namespace GPOSpeedFuelPump
 		{
 			if (instance == null)
 			{
-				GPOprint("making new instance");
+				GPOprint("making new Controller instance");
 				instance = new GPOSpeedPumpController();
 			}
 			return instance;
@@ -31,7 +31,7 @@ namespace GPOSpeedFuelPump
 
 		private GPOSpeedPumpController()
 		{
-			GPOprint("startup");
+			GPOprint("Controller startup");
 			instance = this;
 		}
 
@@ -130,7 +130,7 @@ namespace GPOSpeedFuelPump
 		*/
 		public void ConfigurePump(Part p)
 		{
-			GPOprint("ConfigurePump()");
+			GPOprint("Controller ConfigurePump()");
 			if ((!_winShow) || (p!=configPart))
 			{
 				_winPos.xMin = Math.Min(Math.Max(0, p.vessel == null ? Screen.width - _winPos.width : Event.current.mousePosition.x + 180), Screen.width - _winPos.width);
@@ -175,14 +175,21 @@ namespace GPOSpeedFuelPump
 
 		}
 
-		public void OnAwake()
+		public void Start()
 		{
+			GPOprint("Controller Start()");
+
+			GPOprint("Controller hooking OnVesselSwitch");
 			GameEvents.onVesselChange.Add(OnVesselSwitch);
+
+			GPOprint("Advanced Tweakables = " + GameSettings.ADVANCED_TWEAKABLES.ToString());
+			GameSettings.ADVANCED_TWEAKABLES = true;
+			GPOprint("Advanced Tweakables = " + GameSettings.ADVANCED_TWEAKABLES.ToString());
 		}
 
 		public void OnVesselSwitch(Vessel v)
 		{
-			GPOprint("OnVesselSwitch()");
+			GPOprint("Controller OnVesselSwitch()");
 			_winShow = false;
 		}
 
