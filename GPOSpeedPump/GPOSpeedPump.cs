@@ -20,7 +20,6 @@ http://www.gnu.org/licenses/gpl.html
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 namespace GPOSpeedFuelPump
 {
