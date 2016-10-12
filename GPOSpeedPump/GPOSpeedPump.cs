@@ -31,10 +31,10 @@ namespace GPOSpeedFuelPump
 
 		[KSPField(isPersistant = true, guiActive = true, guiActiveEditor = true, guiName = "Pump Level"), UI_FloatRange(minValue = 0f, maxValue = 16f, stepIncrement = 1f)]
 		public float _pumpLevel;
-        
+
 		[KSPField (isPersistant = true, guiActive = true, guiActiveEditor = true, guiName = "Pump is "), UI_Toggle (disabledText = "Off", enabledText = "On")]
 		public bool _autoPump;
-      
+
 		[KSPField (isPersistant = true, guiActive = true, guiActiveEditor = true, guiName = "Balance"), UI_Toggle (disabledText = "No", enabledText = "Yes")]
 		public bool _autoBalance;
 
@@ -60,6 +60,19 @@ namespace GPOSpeedFuelPump
 			return _resourceFlags [resourceName] & mask;
 			} catch (Exception e) {
 				return 0;
+			}
+		}
+
+		public void somethingChanged(BaseField field, object what)
+		{
+		}
+
+		public override void OnStart(PartModule.StartState state)
+		{
+			for (int i = Fields.Count - 1; i >= 0; --i)
+			{
+				GPOSpeedPumpController.GPOprint("Hooking Field " + Fields[i].name + "/" + Fields[i].guiName);
+				Fields[i].uiControlEditor.onFieldChanged = somethingChanged;
 			}
 		}
 

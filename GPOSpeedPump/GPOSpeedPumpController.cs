@@ -7,12 +7,13 @@ namespace GPOSpeedFuelPump
 	[KSPAddon(KSPAddon.Startup.FlightAndEditor, false)]
 	public class GPOSpeedPumpController : MonoBehaviour
 	{
-		private float _lastUpdate;
+		private float _lastUpdate = Time.time;
 		static private GPOSpeedPumpController instance;
 		private readonly int _winId = new System.Random().Next(0x00010000, 0x7fffffff);
 		private Rect _winPos = new Rect(Screen.width / 2, Screen.height / 2, 208, 16);
 		private bool _winShow;
 		private Part configPart = null;
+		public bool updateNeeded = true;
 
 		public static GPOSpeedPumpController Instance()
 		{
@@ -144,6 +145,7 @@ namespace GPOSpeedFuelPump
 				_winShow = false;
 				configPart = null;
 			}
+			updateNeeded = true;
 		}
 
 		internal static Rect clampToScreen(Rect rect)
@@ -164,20 +166,34 @@ namespace GPOSpeedFuelPump
 
 		public void FixedUpdate()
 		{
+			if (updateNeeded)
+			{
+				updateShipMap();
+			}
+
+			pumpYouUp(Time.time - _lastUpdate);
+
+		}
+
+		public void updateShipMap()
+		{
+		}
+
+		public void pumpYouUp(float deltaTime)
+		{
 			/*
 			if (_autoPump && _pumpLevel > 0f)
-				PumpOut(Time.time - _lastUpdate);
+				PumpOut();
 
 			if (_autoBalance)
 				Balance();*/
-
-			_lastUpdate = Time.time;
 
 		}
 
 		public void Start()
 		{
 			GPOprint("Controller Start()");
+			_lastUpdate = Time.time;
 
 			GPOprint("Controller hooking OnVesselSwitch");
 			GameEvents.onVesselChange.Add(OnVesselSwitch);
@@ -213,7 +229,5 @@ namespace GPOSpeedFuelPump
 
 			GUI.DragWindow();
 		}
-
-
 	}
 }
