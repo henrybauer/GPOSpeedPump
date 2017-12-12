@@ -14,7 +14,7 @@
 	}
 }
 
-//@PART[*]:HAS[!MODULE[GPOSpeedPump]]:FOR[GPOSpeedFuelPump]:FINAL
+//@PART[*]:HAS[!MODULE[GPOSpeedPump]]:FINAL
 //{
 //	MODULE
 //	{
