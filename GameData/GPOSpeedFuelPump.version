@@ -2,6 +2,6 @@
  "NAME":"GPOSpeedFuelPump",
  "URL":"https://raw.githubusercontent.com/henrybauer/GPOSpeedPump/master/GameData/GPOSpeedFuelPump.version",
  "DOWNLOAD":"http://forum.kerbalspaceprogram.com/index.php?/topic/137489-11-gpospeedfuelpump-continued/",
- "VERSION":{"MAJOR":1,"MINOR":8,"PATCH":11,"BUILD":0},
- "KSP_VERSION":{"MAJOR":1,"MINOR":4,"PATCH":1}
+ "VERSION":{"MAJOR":1,"MINOR":8,"PATCH":12,"BUILD":0},
+ "KSP_VERSION":{"MAJOR":1,"MINOR":4,"PATCH":2}
 }
