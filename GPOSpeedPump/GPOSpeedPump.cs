@@ -171,6 +171,10 @@ namespace GPOSpeedFuelPump
 			if (resource.resourceFlowMode == ResourceFlowMode.NULL) {
 				return false;
 			}
+            if (resource.resourceTransferMode == ResourceTransferMode.NONE)
+            {
+                return false;
+            }
 			return true;
 		}
 
