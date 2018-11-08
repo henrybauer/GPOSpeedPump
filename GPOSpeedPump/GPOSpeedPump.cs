@@ -34,10 +34,12 @@ namespace GPOSpeedFuelPump
 		private bool _winShow;
 		private float _lastUpdate;
 		private const float Tolerance = (float)0.0001;
+        private const float minPumpLevel = 0f;
+        private const float maxPumpLevel = 16f;
         
 		private Dictionary<string, int> _resourceFlags;
 
-		[KSPField (isPersistant = true, guiActive = true, guiActiveEditor = true, guiName = "Pump Level"), UI_FloatRange (minValue = 0f, maxValue = 16f, stepIncrement = 1f)]
+		[KSPField (isPersistant = true, guiActive = true, guiActiveEditor = true, guiName = "Pump Level"), UI_FloatRange (minValue = minPumpLevel, maxValue = maxPumpLevel, stepIncrement = 1f)]
 		public float _pumpLevel;
         
 		[KSPField (isPersistant = true, guiActive = true, guiActiveEditor = true, guiName = "Pump is "), UI_Toggle (disabledText = "Off", enabledText = "On")]
@@ -46,7 +48,52 @@ namespace GPOSpeedFuelPump
 		[KSPField (isPersistant = true, guiActive = true, guiActiveEditor = true, guiName = "Balance"), UI_Toggle (disabledText = "No", enabledText = "Yes")]
 		public bool _autoBalance;
 
-		private int GetResourceFlags (string resourceName, int mask)
+        [KSPAction("Pump ON")]
+        public void ActionPumpOn(KSPActionParam param)
+        {
+            _autoPump = true;
+        }
+        [KSPAction("Pump OFF")]
+        public void ActionPumpOff(KSPActionParam param)
+        {
+            _autoPump = false;
+        }
+        [KSPAction("Toggle pump")]
+        public void ActionPumpToggle(KSPActionParam param)
+        {
+            _autoPump = !_autoPump;
+        }
+
+        [KSPAction("Balancing ON")]
+        public void ActionBalanceOn(KSPActionParam param)
+        {
+            _autoBalance = true;
+        }
+        [KSPAction("Balancing OFF")]
+        public void ActionBalanceOff(KSPActionParam param)
+        {
+            _autoBalance = false;
+        }
+        [KSPAction("Toggle balancing")]
+        public void ActionBalanceToggle(KSPActionParam param)
+        {
+            _autoBalance = !_autoBalance;
+        }
+
+        [KSPAction("Increase pump level")]
+        public void ActionIncreasePumpLevel(KSPActionParam param)
+        {
+            _pumpLevel = Math.Min(maxPumpLevel, _pumpLevel + 1f);
+        }
+        [KSPAction("Decrease pump level")]
+        public void ActionDecreasePumpLevel(KSPActionParam param)
+        {
+            _pumpLevel = Math.Max(minPumpLevel, _pumpLevel - 1f);
+        }
+
+
+
+        private int GetResourceFlags (string resourceName, int mask)
 		{
 			try {
 			if (_resourceFlags == null)
@@ -127,6 +174,10 @@ namespace GPOSpeedFuelPump
 			if (resource.resourceFlowMode == ResourceFlowMode.NULL) {
 				return false;
 			}
+            if (resource.resourceTransferMode == ResourceTransferMode.NONE)
+            {
+                return false;
+            }
 			return true;
 		}
 
