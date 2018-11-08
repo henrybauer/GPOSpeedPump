@@ -6,7 +6,7 @@
 // Note that this won't work with fuel switch modules.  If you want GPOSpeedFuelPump to 
 // attach itself to everything, use the second, commented-out version.
 
-@PART[*]:HAS[@RESOURCE[*],!MODULE[GPOSpeedPump]]:FOR[GPOSpeedFuelPump]:FINAL
+@PART[*]:HAS[@RESOURCE[*],!MODULE[GPOSpeedPump]]:FINAL
 {
 	MODULE
 	{
