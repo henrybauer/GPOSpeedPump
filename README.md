@@ -1,2 +1,2 @@
-# GPOSpeedPump
-Fork of http://forum.kerbalspaceprogram.com/index.php?/topic/106448-gpospeedfuelpump-ksp-v102/
+﻿# GPOSpeedPump
+Forum page: https://forum.kerbalspaceprogram.com/index.php?/topic/137489-16-gpospeedfuelpump-continued-v1818/

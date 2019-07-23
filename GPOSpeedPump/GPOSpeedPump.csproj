@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{F92933D8-06EB-4F63-9FEB-C7CE789F33EA}</ProjectGuid>
+    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <RootNamespace>GPOSpeedPump</RootNamespace>
+    <AssemblyName>GPOSpeedPump</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Profile111</TargetFrameworkProfile>
+    <ReleaseVersion>1.8.19</ReleaseVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="GPOSpeedPump.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\GameData\GPOSpeedFuelPump.version">
+      <Link>GPOSpeedFuelPump.version</Link>
+    </None>
+    <None Include="..\GameData\Patches\CommunityResourcePack.cfg">
+      <Link>Patches\CommunityResourcePack.cfg</Link>
+    </None>
+    <None Include="..\GameData\Patches\FuelSwitch.cfg">
+      <Link>Patches\FuelSwitch.cfg</Link>
+    </None>
+    <None Include="..\GameData\Patches\GPOSpeedFuelPump.cfg">
+      <Link>Patches\GPOSpeedFuelPump.cfg</Link>
+    </None>
+    <None Include="..\GameData\Patches\ModularFuelTanks.cfg">
+      <Link>Patches\ModularFuelTanks.cfg</Link>
+    </None>
+    <None Include="..\GameData\Patches\ProceduralTanks.cfg">
+      <Link>Patches\ProceduralTanks.cfg</Link>
+    </None>
+    <None Include="..\GameData\Patches\StationScience.cfg">
+      <Link>Patches\StationScience.cfg</Link>
+    </None>
+    <None Include="..\GameData\Patches\StockResources.cfg">
+      <Link>Patches\StockResources.cfg</Link>
+    </None>
+    <None Include="..\GameData\Patches\defaultPumpLevel.cfg">
+      <Link>Patches\defaultPumpLevel.cfg</Link>
+    </None>
+    <None Include="..\GameData\Patches\everything.cfg.disabled.txt">
+      <Link>Patches\everything.cfg.disabled.txt</Link>
+    </None>
+    <None Include="..\README.md">
+      <Link>README.md</Link>
+    </None>
+    <None Include="..\LICENSE">
+      <Link>LICENSE</Link>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>..\..\KSP173\KSP.app\Contents\Resources\Data\Managed\Assembly-CSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>..\..\KSP173\KSP.app\Contents\Resources\Data\Managed\UnityEngine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>..\..\KSP173\KSP.app\Contents\Resources\Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>..\..\KSP173\KSP.app\Contents\Resources\Data\Managed\UnityEngine.UI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>..\..\KSP173\KSP.app\Contents\Resources\Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+</Project>
